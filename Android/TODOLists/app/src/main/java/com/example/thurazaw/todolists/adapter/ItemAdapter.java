@@ -17,6 +17,7 @@ import com.example.thurazaw.todolists.R;
 import com.example.thurazaw.todolists.database.AppDatabase;
 import com.example.thurazaw.todolists.database.HistoryEntry;
 import com.example.thurazaw.todolists.database.ItemEntry;
+import com.example.thurazaw.todolists.viewmodel.AppExecutors;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -26,7 +27,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
 
     private static final String DATE_FORMAT = "dd/MM/yyy";
 
-    final private ItemClickListener mItemClickListener;
     private List<ItemEntry> mItemEntries;
     private Context mContext;
     private AppDatabase mData;
@@ -34,9 +34,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
 
-    public ItemAdapter(Context context, ItemClickListener listener) {
+    public ItemAdapter(Context context) {
         mContext = context;
-        mItemClickListener = listener;
     }
 
     @Override
@@ -64,8 +63,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
             @Override
             public void onClick(View v) {
 
-                mData.itemDao().InsertHistory(new HistoryEntry(mItemEntries.get(position).getDescription(),
-                        mItemEntries.get(position).getUpdatedAt()));
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                            // insert new task
+                            mData.itemDao().InsertHistory(new HistoryEntry(mItemEntries.get(position).getDescription(),
+                                    mItemEntries.get(position).getUpdatedAt()));
+                            //Log.i("insert","success");
+
+                    }
+                });
 
                 mData.itemDao().deleteItem(mItemEntries.get(position));
                 mItemEntries.remove(position );
@@ -95,9 +102,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         return mItemEntries;
     }
 
-    public interface ItemClickListener {
-        void onItemClickListener(int itemId);
-    }
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -122,7 +126,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         @Override
         public void onClick(View view) {
             int elementId = mItemEntries.get(getAdapterPosition()).getId();
-            mItemClickListener.onItemClickListener(elementId);
         }
 
     }

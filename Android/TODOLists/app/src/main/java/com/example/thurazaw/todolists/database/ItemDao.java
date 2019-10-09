@@ -17,7 +17,7 @@ public interface ItemDao {
     LiveData<List<ItemEntry>> getAllItem();
 
     @Query("SELECt * FROM history ")
-    List<HistoryEntry> getAllHistory();
+    LiveData<List<HistoryEntry>> getAllHistory();
 
     @Insert
     void InsertItem(ItemEntry itemEntry);
@@ -37,6 +37,12 @@ public interface ItemDao {
     @Query("SELECT * FROM item WHERE id = :id")
     LiveData<ItemEntry> loadItemById(int id);
 
+    @Query("SELECT * FROM history WHERE id = :id")
+    LiveData<HistoryEntry> loadHistoryById(int id);
+
     @Query("SELECT count(*) from item")
     int ItemCount();
+
+    @Query("SELECT count(*) from history")
+    int HistoryCount();
 }

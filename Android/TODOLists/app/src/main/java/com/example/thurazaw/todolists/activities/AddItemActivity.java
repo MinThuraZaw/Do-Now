@@ -103,10 +103,6 @@ public class AddItemActivity extends AppCompatActivity {
                 if (mTaskId == DEFAULT_TASK_ID) {
                     // insert new task
                     mDb.itemDao().InsertItem(task);
-                } else {
-                    //update task
-                    task.setId(mTaskId);
-                    mDb.itemDao().updateItem(task);
                 }
                 finish();
             }

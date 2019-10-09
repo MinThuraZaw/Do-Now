@@ -1,7 +1,10 @@
 package com.example.thurazaw.todolists.activities;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatTextView;
@@ -16,6 +19,9 @@ import com.example.thurazaw.todolists.adapter.HistoryAdapter;
 import com.example.thurazaw.todolists.adapter.ItemAdapter;
 import com.example.thurazaw.todolists.database.AppDatabase;
 import com.example.thurazaw.todolists.database.HistoryEntry;
+import com.example.thurazaw.todolists.database.ItemEntry;
+import com.example.thurazaw.todolists.viewmodel.MainHistoryViewModel;
+import com.example.thurazaw.todolists.viewmodel.MainViewModel;
 
 import java.util.List;
 
@@ -46,20 +52,35 @@ public class HistoryActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_history);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        data = appDatabase.itemDao().getAllHistory();
-
-        if(data.size() <= 0){
-            tv_nohistory.setVisibility(View.VISIBLE);
-        }else {
-
-            tv_nohistory.setVisibility(View.INVISIBLE);
-
-
-        }
-
-        historyAdapter = new HistoryAdapter(this, data);
+        historyAdapter = new HistoryAdapter(this);
         recyclerView.setAdapter(historyAdapter);
+
+        setupViewModel();
+
+
+    }
+
+    private void setupViewModel() {
+
+        MainHistoryViewModel mainHistoryViewModel = ViewModelProviders.of(this ).get(MainHistoryViewModel.class);
+
+        mainHistoryViewModel.getHistories().observe(this, new Observer<List<HistoryEntry>>(){
+            @Override
+            public void onChanged(@Nullable List<HistoryEntry> historyEntries) {
+
+                historyAdapter.setHistory(historyEntries);
+
+                if(appDatabase.itemDao().HistoryCount() <= 0){
+                    tv_nohistory.setVisibility(View.VISIBLE);
+                }else {
+
+                    tv_nohistory.setVisibility(View.INVISIBLE);
+
+                }
+
+            }
+        });
+
 
     }
 

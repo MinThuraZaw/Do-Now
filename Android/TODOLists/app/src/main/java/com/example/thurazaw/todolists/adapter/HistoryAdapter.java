@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.example.thurazaw.todolists.R;
 import com.example.thurazaw.todolists.database.AppDatabase;
 import com.example.thurazaw.todolists.database.HistoryEntry;
-import com.example.thurazaw.todolists.database.ItemEntry;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -23,16 +22,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     private static final String DATE_FORMAT = "dd/MM/yyy";
 
-    private List<HistoryEntry> mItemEntries;
+    private List<HistoryEntry> historyEntries;
     private Context mContext;
     private AppDatabase mData;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
 
-    public HistoryAdapter(Context context, List<HistoryEntry> historyEntries) {
+    public HistoryAdapter(Context context) {
         mContext = context;
-        mItemEntries = historyEntries;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
 
-        HistoryEntry taskEntry = mItemEntries.get(position);
+        HistoryEntry taskEntry = historyEntries.get(position);
         String description = taskEntry.getDescription();
         String updatedAt = dateFormat.format(taskEntry.getUpdatedAt());
 
@@ -60,11 +58,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             @Override
             public void onClick(View v) {
 
-                mData.itemDao().deleteHistory(mItemEntries.get(position));
-                Log.i("remove", "Remove "+mItemEntries.get(position).getDescription());
-                mItemEntries.remove(position);
+                mData.itemDao().deleteHistory(historyEntries.get(position));
+                Log.i("remove", "Remove "+ historyEntries.get(position).getDescription());
+                historyEntries.remove(position);
                 notifyItemRemoved(position);
-                notifyItemRangeChanged(position, mItemEntries.size());
+                notifyItemRangeChanged(position, historyEntries.size());
 
 
             }
@@ -75,10 +73,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        if (mItemEntries == null) {
+        if (historyEntries == null) {
             return 0;
         }
-        return mItemEntries.size();
+        return historyEntries.size();
+    }
+
+    public void setHistory(List<HistoryEntry> mhistoryEntries) {
+        this.historyEntries = mhistoryEntries;
+        notifyDataSetChanged();
+
     }
 
 
@@ -104,7 +108,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
         @Override
         public void onClick(View view) {
-            int elementId = mItemEntries.get(getAdapterPosition()).getId();
+            int elementId = historyEntries.get(getAdapterPosition()).getId();
         }
 
     }

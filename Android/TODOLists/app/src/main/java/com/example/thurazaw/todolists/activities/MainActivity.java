@@ -28,7 +28,7 @@ import com.example.thurazaw.todolists.database.ItemEntry;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ItemAdapter.ItemClickListener {
+public class MainActivity extends AppCompatActivity{
 
     private RecyclerView mRecyclerView;
     private ItemAdapter mAdapter;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.ItemC
 
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new ItemAdapter(this, this);
+        mAdapter = new ItemAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
 
@@ -129,8 +129,5 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.ItemC
 
     }
 
-    @Override
-    public void onItemClickListener(int itemId) {
-        // Launch AddTaskActivity adding the itemId as an extra in the intent
-    }
+
 }
